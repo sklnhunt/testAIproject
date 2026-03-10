@@ -143,5 +143,8 @@ G.spawnEnemy = function(type, x, y) {
     case 'grunt':  return new G.Grunt(x, y);
     case 'runner': return new G.Runner(x, y);
     case 'tank':   return new G.Tank(x, y);
+    default:
+      console.error(`G.spawnEnemy: unknown enemy type "${type}" — check levels.js`);
+      return null;
   }
 };

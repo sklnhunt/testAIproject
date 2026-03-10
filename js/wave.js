@@ -12,6 +12,10 @@ G.WaveController = class WaveController {
   }
 
   loadLevel(levelIndex) {
+    if (levelIndex < 0 || levelIndex >= G.LEVELS.length) {
+      console.error(`WaveController.loadLevel: invalid index ${levelIndex} (${G.LEVELS.length} levels)`);
+      return;
+    }
     this.levelIndex = levelIndex;
     this._levelData = G.LEVELS[levelIndex];
     this.waveIndex  = 0;
@@ -36,6 +40,10 @@ G.WaveController = class WaveController {
   beginCurrentWave() {
     if (!this._levelData) return;
     const waveDef = this._levelData.waves[this.waveIndex];
+    if (!waveDef) {
+      console.error(`WaveController.beginCurrentWave: no wave at index ${this.waveIndex}`);
+      return;
+    }
     this.spawnInterval = waveDef.spawnInterval;
     this.startWave(waveDef.enemies);
   }
@@ -91,6 +99,7 @@ G.WaveController = class WaveController {
       case 1: return { x: Math.random() * G.C.W,  y: G.C.H + m };     // bottom
       case 2: return { x: -m,                      y: Math.random() * G.C.H }; // left
       case 3: return { x: G.C.W + m,               y: Math.random() * G.C.H }; // right
+      default: return { x: G.C.W / 2, y: -m };
     }
   }
 };

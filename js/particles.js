@@ -6,6 +6,10 @@ G.ParticleSystem = class ParticleSystem {
   }
 
   spawnDeath(x, y, colors) {
+    if (!colors || colors.length === 0) {
+      console.error('ParticleSystem.spawnDeath: colors array missing — check G.DEATH_COLORS');
+      return;
+    }
     const n = G.C.DEATH_PARTICLES;
     for (let i = 0; i < n; i++) {
       const angle = (Math.PI * 2 / n) * i + (Math.random() - 0.5) * 0.4;

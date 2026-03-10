@@ -178,7 +178,8 @@ G.Game = class Game {
     // Wave spawning
     const spawn = this.wave.update();
     if (spawn) {
-      this.enemies.push(G.spawnEnemy(spawn.type, spawn.x, spawn.y));
+      const enemy = G.spawnEnemy(spawn.type, spawn.x, spawn.y);
+      if (enemy) this.enemies.push(enemy);
     }
 
     // Update bullets
@@ -308,5 +309,13 @@ G.Game = class Game {
 // ─── Entry point ─────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('gameCanvas');
+  if (!canvas) {
+    console.error('Game init failed: canvas element not found');
+    return;
+  }
+  if (!canvas.getContext('2d')) {
+    console.error('Game init failed: 2D canvas context not supported');
+    return;
+  }
   window._game = new G.Game(canvas);
 });
