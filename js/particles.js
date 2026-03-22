@@ -82,5 +82,6 @@ G.DEATH_COLORS = {
   grunt:  ['#cc2222', '#ff4444', '#ffff00', '#884411'],
   runner: ['#ff8800', '#ffcc44', '#cc5500', '#ffffff'],
   tank:   ['#228822', '#55aa55', '#aaff44', '#115511'],
+  sniper: ['#8844cc', '#aa66ee', '#ff4444', '#552288'],
   player: ['#4488ff', '#88ccff', '#ffcc88', '#ffffff'],
 };

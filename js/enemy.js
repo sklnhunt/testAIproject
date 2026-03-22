@@ -137,12 +137,65 @@ G.Tank = class Tank extends G.Enemy {
   }
 };
 
+// ─── Sniper ──────────────────────────────────────────────────────────────────
+G.Sniper = class Sniper extends G.Enemy {
+  constructor(x, y) {
+    super(x, y, 'sniper', G.C.SNIPER_HP, G.C.SNIPER_HW, G.C.SNIPER_HH,
+          G.C.SNIPER_SPEED, G.C.SNIPER_SCALE);
+    this.score = G.C.SNIPER_SCORE;
+    this.teleportCd = G.C.SNIPER_TELEPORT_CD / 2; // first teleport comes sooner
+    this.shootCd = G.C.SNIPER_SHOOT_CD;
+    this.pauseTimer = 0;
+    this.pendingBullet = null;
+  }
+
+  update(px, py) {
+    this.pendingBullet = null;
+
+    // Teleport logic
+    this.teleportCd--;
+    if (this.teleportCd <= 0) {
+      const margin = G.C.SPAWN_MARGIN + 30;
+      this.x = margin + Math.random() * (G.C.W - margin * 2);
+      this.y = margin + Math.random() * (G.C.H - margin * 2);
+      this.teleportCd = G.C.SNIPER_TELEPORT_CD;
+      this.pauseTimer = G.C.SNIPER_TELEPORT_PAUSE;
+    }
+
+    // After teleport pause, move slowly toward player
+    if (this.pauseTimer > 0) {
+      this.pauseTimer--;
+    } else {
+      this.seekPlayer(px, py);
+    }
+
+    // Shoot at player on cooldown
+    this.shootCd--;
+    if (this.shootCd <= 0) {
+      const dx = px - this.x;
+      const dy = py - this.y;
+      const angle = Math.atan2(dy, dx);
+      this.pendingBullet = {
+        x: this.x, y: this.y, angle: angle,
+        speed: G.C.SNIPER_BULLET_SPEED,
+        radius: G.C.SNIPER_BULLET_R,
+        color: G.C.SNIPER_BULLET_COL,
+        dmg: G.C.SNIPER_BULLET_DMG,
+      };
+      this.shootCd = G.C.SNIPER_SHOOT_CD;
+    }
+
+    this.tickAnim();
+  }
+};
+
 // ─── Factory ──────────────────────────────────────────────────────────────────
 G.spawnEnemy = function(type, x, y) {
   switch (type) {
     case 'grunt':  return new G.Grunt(x, y);
     case 'runner': return new G.Runner(x, y);
     case 'tank':   return new G.Tank(x, y);
+    case 'sniper': return new G.Sniper(x, y);
     default:
       console.error(`G.spawnEnemy: unknown enemy type "${type}" — check levels.js`);
       return null;

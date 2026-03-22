@@ -185,6 +185,33 @@ G.TANK_FRAMES = [
   ],
 ];
 
+// ─── Sniper (8×8, 2 frames) ─────────────────────────────────────────────────
+G.SNIPER_PALETTE = {
+  V: '#8844cc', D: '#552288', E: '#ff4444', K: '#000000', L: '#aa66ee',
+};
+G.SNIPER_FRAMES = [
+  [
+    '..VVVV..',
+    '.VLVVLV.',
+    '.VEEVEV.',
+    '.VVVVVV.',
+    'DVVVVVVD',
+    '.DVVVVD.',
+    '.DV..VD.',
+    '.KV..VK.',
+  ],
+  [
+    '..VVVV..',
+    '.VLVVLV.',
+    '.VEEVEV.',
+    '.VVVVVV.',
+    'DVVVVVVD',
+    '.DVVVVD.',
+    'KDV..VD.',
+    '..KV.VK.',
+  ],
+];
+
 G.drawEnemy = function(ctx, type, frame, scale) {
   if (type === 'grunt') {
     G.drawPixelArt(ctx, G.GRUNT_FRAMES[frame % 2], 4, 4, scale, G.GRUNT_PALETTE);
@@ -192,6 +219,8 @@ G.drawEnemy = function(ctx, type, frame, scale) {
     G.drawPixelArt(ctx, G.RUNNER_FRAMES[frame % 2], 3, 3, scale, G.RUNNER_PALETTE);
   } else if (type === 'tank') {
     G.drawPixelArt(ctx, G.TANK_FRAMES[frame % 2], 5, 5, scale, G.TANK_PALETTE);
+  } else if (type === 'sniper') {
+    G.drawPixelArt(ctx, G.SNIPER_FRAMES[frame % 2], 4, 4, scale, G.SNIPER_PALETTE);
   }
 };
 

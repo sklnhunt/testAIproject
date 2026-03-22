@@ -40,6 +40,7 @@ G.Game = class Game {
     this.player = null;
     this.enemies = [];
     this.bullets = [];
+    this.enemyBullets = [];
 
     this.stateTimer = 0;
 
@@ -73,6 +74,7 @@ G.Game = class Game {
     this.score   = 0;
     this.enemies = [];
     this.bullets = [];
+    this.enemyBullets = [];
     this.particles.clear();
     this.player  = new G.Player();
     this.wave.loadLevel(levelIndex);
@@ -89,6 +91,7 @@ G.Game = class Game {
     }
     this.enemies = [];
     this.bullets = [];
+    this.enemyBullets = [];
     this.particles.clear();
     this.player  = new G.Player();
     this.wave.loadLevel(next);
@@ -188,6 +191,18 @@ G.Game = class Game {
     // Update enemies
     for (const e of this.enemies) e.update(player.x, player.y);
 
+    // Collect enemy bullets
+    for (const e of this.enemies) {
+      if (e.pendingBullet) {
+        const pb = e.pendingBullet;
+        this.enemyBullets.push(new G.EnemyBullet(pb.x, pb.y, pb.angle, pb.speed, pb.radius, pb.color, pb.dmg));
+        e.pendingBullet = null;
+      }
+    }
+
+    // Update enemy bullets
+    for (const eb of this.enemyBullets) eb.update();
+
     // ── Bullet vs Enemy collision ──────────────────────────────────────────
     for (const b of this.bullets) {
       if (b.dead) continue;
@@ -223,8 +238,23 @@ G.Game = class Game {
       }
     }
 
+    // ── Enemy Bullet vs Player collision ────────────────────────────────────
+    for (const eb of this.enemyBullets) {
+      if (eb.dead) continue;
+      if (circleRect(eb.x, eb.y, eb.radius,
+            player.left, player.top, player.right, player.bottom)) {
+        eb.dead = true;
+        player.takeDamage(eb.dmg);
+        this.particles.spawnImpact(eb.x, eb.y);
+        if (player.iFrames === G.C.PLAYER_IFRAME) {
+          this.effects.shake(G.C.DEATH_SHAKE);
+        }
+      }
+    }
+
     // Remove dead bullets / enemies
     this.bullets = this.bullets.filter(b => !b.dead);
+    this.enemyBullets = this.enemyBullets.filter(eb => !eb.dead);
     this.enemies = this.enemies.filter(e => !e.dead);
 
     // Update particles
@@ -265,6 +295,9 @@ G.Game = class Game {
 
       // Bullets
       for (const b of this.bullets) b.draw(ctx);
+
+      // Enemy bullets
+      for (const eb of this.enemyBullets) eb.draw(ctx);
 
       // Enemies
       for (const e of this.enemies) e.draw(ctx);
